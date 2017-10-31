@@ -38,7 +38,8 @@ function RademacherHomePilot(log, config, api) {
                     
                     // blinds
                     if(data.productName.includes("RolloTron") || data.productName.includes("Troll Comfort") ||
-                       data.productName.includes("Rohrmotor") || data.productName.includes("Connect-Aktor"))
+                       data.productName.includes("Rohrmotor") || data.productName.includes("Connect-Aktor") || 
+		       data.productName.includes("RolloTube DuoFern") )
                     {
                         if (accessory === undefined) {
                             self.addBlindsAccessory(data);
