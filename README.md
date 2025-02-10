@@ -39,6 +39,12 @@ Configuration sample:
 * `did_list_usage`: if "include" you can choose what Devices are mirrored to HomeKit, you have to enter matching DIDs below, if "exclude" you can exclude a list of DIDs, default is "none"
 * `did_list`: enter the Device IDs (DIDs) you want to be shown in HomeKit. You can find them in the log file in square brackets ("[12/6/2020, 5:40:36 PM] [RademacherHomePilot] blinds are online: bodentief [10000]" => did = 10000), example list: "did_list": [10000,10001,10002]
 
+# Icons
+## Awning
+If you set the icon "Awning/Markise" in HomePilot for blinds, the position will not be inverted (means 0=Closed, 100=Open)
+## Lock
+If you set the icon "Closing Contact/Schließkontakt" for a switch it will be added as lock
+
 # Community
 
 The official Homebridge Discord server and Reddit community are where users can discuss Homebridge and ask for help.

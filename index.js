@@ -108,7 +108,7 @@ function RademacherHomePilot(log, config, api) {
                             }
                             else {
                                 self.log("blinds are online: %s [%s]", accessory.displayName, data.did);
-                                self.accessories[uuid] = new RademacherBlindsAccessory(self.log, self.debug, (accessory instanceof RademacherBlindsAccessory ? accessory.accessory : accessory), data, self.session, self.inverted);
+                                self.accessories[uuid] = new RademacherBlindsAccessory(self.log, self.debug, (accessory instanceof RademacherBlindsAccessory ? accessory.accessory : accessory), data, self.session);
                             }
                         }
                         // dimmer

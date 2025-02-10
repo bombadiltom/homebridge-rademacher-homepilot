@@ -1,10 +1,10 @@
 var tools = require("./tools.js");
 var RademacherAccessory = require("./RademacherAccessory.js");
 
-function RademacherBlindsAccessory(log, debug, accessory, blind, session, inverted) {
+function RademacherBlindsAccessory(log, debug, accessory, blind, session) {
     RademacherAccessory.call(this, log, debug, accessory, blind, session);
-    this.inverted = inverted;
     this.blind = blind;
+    this.inverted = this.blind.iconSet.k!="iconset7"
     var position=0;
     if (this.blind.hasOwnProperty("statusesMap") && this.blind.statusesMap.hasOwnProperty("Position"))
     {

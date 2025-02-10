@@ -1,4 +1,6 @@
 # Changelog
+## 0.13.0
+### add inversion based on icons for blinds
 
 ## 0.12.3
 ### allow node 22
