@@ -4,11 +4,13 @@
   "description": "rademacher homepilot plugin for homebridge: https://github.com/bombadiltom/homebridge-rademacher-homepilot",
   "license": "MIT",
   "keywords": [
-    "homebridge-plugin", "rademacher", "homepilot"
+    "homebridge-plugin",
+    "rademacher",
+    "homepilot"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bombadiltom/homebridge-rademacher-homepilot.git"
+    "url": "git+https://github.com/bombadiltom/homebridge-rademacher-homepilot.git"
   },
   "bugs": {
     "url": "http://github.com/bombadiltom/homebridge-rademacher-homepilot/issues"
@@ -27,7 +29,7 @@
     "homebridge": "^2.0.0-beta.0"
   },
   "funding": {
-    "type" : "paypal",
-    "url" : "https://paypal.me/tlorenz"
+    "type": "paypal",
+    "url": "https://paypal.me/tlorenz"
   }
 }
