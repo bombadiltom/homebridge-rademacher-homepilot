@@ -1,4 +1,7 @@
 # Changelog
+## 0.13.1
+### fix adding new accessories
+
 ## 0.13.0
 ### add inversion based on icons for blinds
 
