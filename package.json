@@ -1,6 +1,6 @@
 {
   "name": "homebridge-rademacher-homepilot",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "description": "rademacher homepilot plugin for homebridge: https://github.com/bombadiltom/homebridge-rademacher-homepilot",
   "license": "MIT",
   "keywords": [
@@ -17,7 +17,7 @@
   },
   "engines": {
     "homebridge": "^1.6.0 || ^2.0.0-beta.0",
-    "node": "^18 || ^24"
+    "node": "^18 || ^20 || ^22 || ^24"
   },
   "dependencies": {
     "axios": "^0",

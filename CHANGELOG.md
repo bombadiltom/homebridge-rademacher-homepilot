@@ -1,4 +1,7 @@
 # Changelog
+## 0.13.2
+### fix node dependencies
+
 ## 0.13.1
 ### fix adding new accessories
 
