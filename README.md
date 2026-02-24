@@ -24,6 +24,15 @@ Configuration sample:
         "password": "",
         "password_hashed": false,
         "scenes_as_switch": false,
+        "add_blinds": true,
+        "add_dimmer": true,
+        "add_thermostat": true,
+        "add_lock_switch": true,
+        "add_enviroment_sensor": true,
+        "add_sun_sensor": true,
+        "add_temperature_sensor": true,
+        "add_door_window_sensor": true,
+        "add_smoke_alarmr": true,
         "debug": false,
         "did_list_usage": "none",
         "did_list": []
@@ -35,6 +44,15 @@ Configuration sample:
 * `password`: password to HomePilot (if enabled in its web interface)
 * `password_hashed`: password to HomePilot is already hashed with sha256 (if enabled in its web interface), for hashing https://www.sha-generator.de/ worked for me
 * `scenes_as_switch`: if "true", all scenes are added as switch to HomeKit, otherwise scenes are not added at all 
+* `add_blinds`: if "true", all blinds are added as  HomeKit, otherwise blinds are not added at all
+* `add_dimmer`: if "true", all dimmers are added to HomeKit, otherwise dimmers are not added at all
+* `add_thermostat`: if "true", all thermostats are added to HomeKit, otherwise thermostats are not added at all 
+* `add_lock_switch`: if "true", all locks and switches are added to HomeKit, otherwise locks and switches are not added at all 
+* `add_enviroment_sensor`: if "true", all environment sensors are added HomeKit, otherwise environment sensors are not added at all 
+* `add_sun_sensor`: if "true", sun sensors are added to HomeKit, otherwise sun sensors are not added at all 
+* `add_temperature_sensor`: if "true", temperature sensors are added to HomeKit, otherwise temperature sensors are not added at all 
+* `add_door_window_sensor`: if "true", door/window sensors are added to HomeKit, otherwise door/window sensors are not added at all 
+* `add_smoke_alarm`: if "true", sun smoke alarms are added to HomeKit, otherwise smoke_alarms are not added at all 
 * `debug`: if "true", debugging is activated
 * `did_list_usage`: if "include" you can choose what Devices are mirrored to HomeKit, you have to enter matching DIDs below, if "exclude" you can exclude a list of DIDs, default is "none"
 * `did_list`: enter the Device IDs (DIDs) you want to be shown in HomeKit. You can find them in the log file in square brackets ("[12/6/2020, 5:40:36 PM] [RademacherHomePilot] blinds are online: bodentief [10000]" => did = 10000), example list: "did_list": [10000,10001,10002]

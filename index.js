@@ -23,7 +23,7 @@ module.exports = function(homebridge) {
 };
 
 // exclude/include dids
-function did_filter(log, config,data)
+function did_filter(log,config,data)
 {
     this.debug = (String(config["debug"]).toLowerCase() == "true"); 
     id=data.did?data.did:data.sid;
@@ -40,23 +40,23 @@ function did_filter(log, config,data)
         {
             if (config["did_list"].includes(id))
             {
-                log("did filtering: including did "+id)
+                log("did filtering: including did %s: %s",id,data.ndame)
                 return data;
             }
             else
             {
-                log("did filtering: excluding (not in include list) did "+id)
+                log("did filtering: excluding (not in include list) did %s: %s",id,data.name)
             }   
         }
         else if (config["did_list_usage"]=="exclude") 
         {
             if (config["did_list"].includes(id))
             {
-                log("did filtering: excluding did "+id)
+                log("did filtering: excluding did %s: %s",id,data.name)
             }
             else
             {
-                log("did filtering: including (not in exclude list) did "+id)
+                log("did filtering: including (not in exclude list) did %s: %s",id,data.name)
                 return data;
             }              
         }
@@ -93,80 +93,116 @@ function RademacherHomePilot(log, config, api) {
                   self.log("Request failed: "+e);
                   return;
                 }
-                if (body.devices)
-                {
+                if (body.devices) {
                     body.devices.filter(data => did_filter(self.log,config,data)).forEach(function(data) {
                         var uuid = UUIDGen.generate("did"+data.did);
                         var accessory = self.accessories[uuid];
                        
                         // blinds
                         if(["27601565","35000864","14234511","35000662","36500172","36500572_A","16234511_A","16234511_S","45059071","31500162","23602075","32000064","32000064_A","14236011",
-                            "23782076","10182345","10502002","10122345","35200262","10236020","10941001","10251530","10142345","16901001","35200662","10502001","10771001_A"].includes(data.deviceNumber))
-                        {
-                            if (accessory === undefined) {
-                                self.addBlindsAccessory(data);
+                            "23782076","10182345","10502002","10122345","35200262","10236020","10941001","10251530","10142345","16901001","35200662","10502001","10771001_A"].includes(data.deviceNumber)) {
+                            if (String(config["add_blinds"]).toLowerCase() == "true") {
+                                if (accessory === undefined) {
+                                    self.addBlindsAccessory(data);
+                                }
+                                else {
+                                    self.log("blinds are online: %s [%s]", accessory.displayName, data.did);
+                                    self.accessories[uuid] = new RademacherBlindsAccessory(self.log, self.debug, (accessory instanceof RademacherBlindsAccessory ? accessory.accessory : accessory), data, self.session);
+                                }
                             }
                             else {
-                                self.log("blinds are online: %s [%s]", accessory.displayName, data.did);
-                                self.accessories[uuid] = new RademacherBlindsAccessory(self.log, self.debug, (accessory instanceof RademacherBlindsAccessory ? accessory.accessory : accessory), data, self.session);
+                                self.log("blinds found but not added: %s [%s]", data.name, data.did);
                             }
                         }
                         // dimmer
                         else if(["35140462","35000462","35001262","99999982","99999983","35200462"].includes(data.deviceNumber))
                         {
-                            if (accessory === undefined) {
-                                self.addDimmerAccessory(data);
+                            if (String(config["add_dimmer"]).toLowerCase() == "true") 
+                            {
+                                if (accessory === undefined)
+                                {
+                                    self.addDimmerAccessory(data);
+                                }
+                                else 
+                                {
+                                    self.log("dimmer is online: %s [%s]", accessory.displayName, data.did);
+                                    self.accessories[uuid] = new RademacherDimmerAccessory(self.log, self.debug, (accessory instanceof RademacherDimmerAccessory ? accessory.accessory : accessory), data, self.session, self.inverted);
+                                }
                             }
-                            else {
-                                self.log("dimmer is online: %s [%s]", accessory.displayName, data.did);
-                                self.accessories[uuid] = new RademacherDimmerAccessory(self.log, self.debug, (accessory instanceof RademacherDimmerAccessory ? accessory.accessory : accessory), data, self.session, self.inverted);
+                            else
+                            {
+                                self.log("dimmer found but not added: %s [%s]", data.name, data.did);
                             }
                         }
                         // thermostat
                         else if(["35003064","32501812_A","35002319","13601001","13501001_A"].includes(data.deviceNumber))
                         {
-                            if (accessory === undefined) {
-                                self.addThermostatAccessory(data);
+                            if (String(config["add_thermostat"]).toLowerCase() == "true") {
+                                if (accessory === undefined) {
+                                    self.addThermostatAccessory(data);
+                                }
+                                else {
+                                    self.log("thermostat is online: %s [%s]", accessory.displayName, data.did);
+                                    self.accessories[uuid] = new RademacherThermostatAccessory(self.log, self.debug, (accessory instanceof RademacherThermostatAccessory ? accessory.accessory : accessory), data, self.session, self.inverted);
+                                }
                             }
-                            else {
-                                self.log("thermostat is online: %s [%s]", accessory.displayName, data.did);
-                                self.accessories[uuid] = new RademacherThermostatAccessory(self.log, self.debug, (accessory instanceof RademacherThermostatAccessory ? accessory.accessory : accessory), data, self.session, self.inverted);
+                            else
+                            {
+                                self.log("thermostat found but not added: %s [%s]", data.name, data.did);
                             }
                         }
                         // lock/switch
                         else if(["35000262","35001164","32501972","32501972_A","99999960","11301001","32501772_A"].includes(data.deviceNumber))
                         {
-                            // icon = "Schließkontakt" ? => lock
-                            if (data.iconSet.k.includes("iconset27")){
-                                if (accessory === undefined) {
-                                    self.addLockAccessory(data);
+                            if (String(config["add_lock_switch"]).toLowerCase() == "true") {
+                                // icon = "Schließkontakt" ? => lock
+                                if (data.iconSet.k.includes("iconset27")){
+                                    if (accessory === undefined) {
+                                        self.addLockAccessory(data);
+                                    }
+                                    else
+                                    { 
+                                        self.log("lock is online: %s [%s]", accessory.displayName, data.did);
+                                        self.accessories[uuid] = new RademacherLockAccessory(self.log, self.debug, (accessory instanceof RademacherLockAccessory ? accessory.accessory : accessory), data, self.session);
+                                    }
                                 }
-                                else
-                                { 
-                                    self.log("lock is online: %s [%s]", accessory.displayName, data.did);
-                                    self.accessories[uuid] = new RademacherLockAccessory(self.log, self.debug, (accessory instanceof RademacherLockAccessory ? accessory.accessory : accessory), data, self.session);
+                                else {
+                                    if (accessory === undefined) {
+                                        self.addSwitchAccessory(data);
+                                    }
+                                    else
+                                    {
+                                        self.log("switch is online: %s [%s]", accessory.displayName, data.did);
+                                        self.accessories[uuid] = new RademacherSwitchAccessory(self.log, self.debug, (accessory instanceof RademacherSwitchAccessory ? accessory.accessory : accessory), data, self.session);
+                                    }
                                 }
                             }
-                            else {
-                                if (accessory === undefined) {
-                                    self.addSwitchAccessory(data);
-                                }
-                                else
-                                {
-                                    self.log("switch is online: %s [%s]", accessory.displayName, data.did);
-                                    self.accessories[uuid] = new RademacherSwitchAccessory(self.log, self.debug, (accessory instanceof RademacherSwitchAccessory ? accessory.accessory : accessory), data, self.session);
-                                }
+                            else
+                            {
+                                self.log("lock/switch found but not added: %s [%s]", data.name, data.did);
                             }
                         }
                         // enviroment sensor
                         else if(["32000064","32000064_A","32000064_S","32004464"].includes(data.deviceNumber))
                         {
-                            self.addEnvironmentSensorAccessory(accessory, data);
+                            if (String(config["add_environment_sensor"]).toLowerCase() == "true") {
+                                self.addEnvironmentSensorAccessory(accessory, data);
+                            }
+                            else
+                            {
+                                self.log("environment sensor found but not added: %s [%s]", data.name, data.did);
+                            }
                         }
                         // sun sensor
                         else if(["32000069","32210069","10771003"].includes(data.deviceNumber))
                         {
-                            self.addSunSensorAccessory(accessory, data);
+                            if (String(config["add_sun_sensor"]).toLowerCase() == "true") {
+                                self.addSunSensorAccessory(accessory, data);
+                            }
+                            else
+                            {
+                                self.log("sun sensor found but not added: %s [%s]", data.name, data.did);
+                            }
                         }
                         // unknown
                         else
@@ -195,50 +231,80 @@ function RademacherHomePilot(log, config, api) {
                         // smoke alarm
                         if(["32001664"].includes(data.deviceNumber))
                         {
-                            if (accessory === undefined) {
-                                self.addSmokeAlarmAccessory(data);
+                            if (String(config["add_smoke_alarm"]).toLowerCase() == "true") {
+                                if (accessory === undefined) {
+                                    self.addSmokeAlarmAccessory(data);
+                                }
+                                else {
+                                    self.log("smoke alarm is online: %s [%s]", accessory.displayName, data.did);
+                                    self.accessories[uuid] = new RademacherSmokeAlarmAccessory(self.log, self.debug, (accessory instanceof RademacherSmokeAlarmAccessory ? accessory.accessory : accessory), data, self.session);
+                                }
                             }
-                            else {
-                                self.log("smoke alarm is online: %s [%s]", accessory.displayName, data.did);
-                                self.accessories[uuid] = new RademacherSmokeAlarmAccessory(self.log, self.debug, (accessory instanceof RademacherSmokeAlarmAccessory ? accessory.accessory : accessory), data, self.session);
+                            else
+                            {
+                                self.log("smoke alarm found but not added: %s [%s]", accessory.displayName, data.did);
                             }
                         }
                         // environment sensor
                         else if(["32000064_S"].includes(data.deviceNumber))
                         {
-                            self.addEnvironmentSensorAccessory(accessory, data);
+                            if (String(config["add_environment_sensor"]).toLowerCase() == "true") {
+                                self.addEnvironmentSensorAccessory(accessory, data);
+                            }
+                            else
+                            {
+                                self.log("environment sensor found but not added: %s [%s]", data.name, data.did);
+                            }
                         }
                         // sun sensor
                         else if(["32000069","32210069","10771003"].includes(data.deviceNumber))
                         {
-                            self.addSunSensorAccessory(accessory, data);
+                            if (String(config["add_sun_sensor"]).toLowerCase() == "true") {
+                                self.addSunSensorAccessory(accessory, data);
+                            }
+                            else
+                            {
+                                self.log("sun sensor found but not added: %s [%s]", data.name, data.did);
+                            }
                         }
                         // temperature sensor
                         else if(["32501812_S","13501001_S"].includes(data.deviceNumber))
                         {
-                            if (accessory === undefined) {
-                                self.addTemperatureSensorAccessory(data);
+                            if (String(config["add_temperature_sensor"]).toLowerCase() == "true") {
+                                if (accessory === undefined) {
+                                    self.addTemperatureSensorAccessory(data);
+                                }
+                                else {
+                                    self.log("temperature sensor is online: %s [%s]", data.name, data.did);
+                                    self.accessories[uuid] = new RademacherTemperatureSensorAccessory(self.log, self.debug, (accessory instanceof RademacherTemperatureSensorAccessory ? accessory.accessory : accessory), data, self.session);
+                                }
                             }
-                            else {
-                                self.log("temperature sensor is online: %s [%s]", accessory.displayName, data.did);
-                                self.accessories[uuid] = new RademacherTemperatureSensorAccessory(self.log, self.debug, (accessory instanceof RademacherTemperatureSensorAccessory ? accessory.accessory : accessory), data, self.session);
+                            else
+                            {
+                                self.log("temperatrue sensor found but not added: %s [%s]", data.name, data.did);
                             }
                         }
                         // door/window sensor
                         else if(["32003164","32002119","14771002"].includes(data.deviceNumber))
                         {
-                            if (accessory === undefined) {
-                                self.addDoorSensorAccessory(data);
+                            if (String(config["add_door_window_sensor"]).toLowerCase() == "true") {
+                                if (accessory === undefined) {
+                                    self.addDoorSensorAccessory(data);
+                                }
+                                else {
+                                    self.log("door sensor is online: %s [%s]", accessory.displayName, data.did);
+                                    self.accessories[uuid] = new RademacherDoorSensorAccessory(self.log, self.debug, (accessory instanceof RademacherDoorSensorAccessory ? accessory.accessory : accessory), data, self.session);
+                                }
                             }
-                            else {
-                                self.log("door sensor is online: %s [%s]", accessory.displayName, data.did);
-                                self.accessories[uuid] = new RademacherDoorSensorAccessory(self.log, self.debug, (accessory instanceof RademacherDoorSensorAccessory ? accessory.accessory : accessory), data, self.session);
+                            else
+                            {
+                                self.log("door/window sensor found but not added: %s [%s]", data.name, data.did);
                             }
                         }                    
                         // unknown
                         else
                         {
-                            self.log("Unknown product: %s",data.deviceNumber);
+                            self.log("Unknown product: %s %s %s",data.deviceNumber, data.did, data.name);
                             self.log(data);
                         }
                     });
@@ -268,6 +334,9 @@ function RademacherHomePilot(log, config, api) {
                                 self.log("scene is online: %s [%s]", accessory.displayName, data.sid);
                                 self.accessories[uuid] = new RademacherSceneAccessory(self.log, self.debug, (accessory instanceof RademacherSceneAccessory ? accessory.accessory : accessory), data, self.session);
                             }
+                        }
+                        else {
+                            self.log("Filtered scene: %s %s",data.sid, data.name);
                         }
                     });
                 }

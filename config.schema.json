@@ -39,6 +39,69 @@
                 "default": true,
                 "description": " if true, all scenes are added as switch to HomeKit, otherwise scenes are not added at all "
             },
+            "add_blinds": {
+                "title": "Add blinds",
+                "type": "boolean",
+                "required": true,
+                "default": true,
+                "description": " if true, blinds are added to HomeKit, otherwise blinds are not added at all "
+            },
+            "add_dimmer": {
+                "title": "Add dimmer",
+                "type": "boolean",
+                "required": true,
+                "default": true,
+                "description": " if true, dimmers are added to HomeKit, otherwise dimmers are not added at all "
+            },
+            "add_thermostat": {
+                "title": "Add thermostat",
+                "type": "boolean",
+                "required": true,
+                "default": true,
+                "description": " if true, thermostats are added to HomeKit, otherwise thermostats are not added at all "
+            },
+            "add_lock_switch": {
+                "title": "Add lock/switch",
+                "type": "boolean",
+                "required": true,
+                "default": true,
+                "description": " if true, locks/switches are added to HomeKit, otherwise locks/switches are not added at all "
+            },
+            "add_enviroment_sensor": {
+                "title": "Add enviroment sensor",
+                "type": "boolean",
+                "required": true,
+                "default": true,
+                "description": " if true, enviroment sensors are added to HomeKit, otherwise enviroment sensors are not added at all "
+            },
+            "add_sun_sensor": {
+                "title": "Add sun sensor",
+                "type": "boolean",
+                "required": true,
+                "default": true,
+                "description": " if true, sun sensors are added to HomeKit, otherwise sun sensors are not added at all "
+            },
+            "add_temperature_sensor": {
+                "title": "Add temperature sensor",
+                "type": "boolean",
+                "required": true,
+                "default": true,
+                "description": " if true, temperature sensors are added to HomeKit, otherwise temperature sensors are not added at all "
+            },
+            "add_door_window_sensor": {
+                "title": "Add door/window sensor",
+                "type": "boolean",
+                "required": true,
+                "default": true,
+                "description": " if true, door/window sensors are added to HomeKit, otherwise door/window sensors are not added at all "
+            },
+            "add_smoke_alarm": {
+                "title": "Add smoke alarm",
+                "type": "boolean",
+                "required": true,
+                "default": true,
+                "description": " if true, smoke alarms are added to HomeKit, otherwise smoke alarms are not added at all "
+            },
             "debug": {
                 "title": "Log DEBUG messages",
                 "type": "boolean",

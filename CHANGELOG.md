@@ -1,4 +1,7 @@
 # Changelog
+## 0.14.0
+### add switches for device types
+
 ## 0.13.2
 ### fix node dependencies
 
