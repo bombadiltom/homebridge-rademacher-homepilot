@@ -17,7 +17,7 @@ RademacherTemperatureSensorAccessory.prototype = Object.create(RademacherAccesso
 
 RademacherTemperatureSensorAccessory.prototype.getCurrentTemperature = function (callback) {
     if (this.debug) this.log("%s [%s] - getting current temperature", this.accessory.displayName, this.sensor.did);
-
+    callback(null,this.currentTemperature);
     var self = this;
     var did = this.did;
 
@@ -26,9 +26,9 @@ RademacherTemperatureSensorAccessory.prototype.getCurrentTemperature = function 
         body.meters.forEach(function(data) {
             if(data.did == did)
             {
-                var t = data.readings.temperature_primary;
-                if (self.debug) self.log("%s [%s] - temperature is %s", self.accessory.displayName, self.sensor.did, t);
-                callback(null, t);
+                self.currentTemperature = data.readings.temperature_primary;
+                if (self.debug) self.log("%s [%s] - temperature is %s", self.accessory.displayName, self.sensor.did, self.currentTemperature);
+                self.service.getCharacteristic(global.Characteristic.CurrentTemperature).updateValue(self.currentTemperature)
             }
         });
     });

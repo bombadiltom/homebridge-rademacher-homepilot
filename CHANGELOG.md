@@ -1,4 +1,7 @@
 # Changelog
+## 0.14.1
+### fix temperature sensor
+
 ## 0.14.0
 ### add switches for device types
 
