@@ -1,4 +1,7 @@
 # Changelog
+## 0.14.2
+### fix temperature sensor again
+
 ## 0.14.1
 ### fix temperature sensor
 

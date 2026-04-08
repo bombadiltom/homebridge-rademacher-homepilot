@@ -5,11 +5,12 @@ function RademacherTemperatureSensorAccessory(log, debug, accessory, sensor, ses
     RademacherAccessory.call(this, log, debug, accessory, sensor, session);
 
     this.sensor = sensor;
+    this.currentTemperature = sensor.readings.temperature_primary;
 
     this.service = this.accessory.getService(global.Service.TemperatureSensor);
     this.service.getCharacteristic(global.Characteristic.CurrentTemperature)
         .setProps({minValue: -30.0, maxValue: 80.0})
-        .setValue(sensor.readings.temperature_primary)
+        .setValue(this.currentTemperature)
         .on('get', this.getCurrentTemperature.bind(this));
 }
 
@@ -19,15 +20,17 @@ RademacherTemperatureSensorAccessory.prototype.getCurrentTemperature = function 
     if (this.debug) this.log("%s [%s] - getting current temperature", this.accessory.displayName, this.sensor.did);
     callback(null,this.currentTemperature);
     var self = this;
-    var did = this.did;
 
-    this.session.get("/v4/devices?devtype=Sensor", 30000, function(e, body) {
-        if(e) return callback(new Error("Request failed: "+e), false);
+    this.session.get("/v4/devices?devtype=Sensor", 30000, function(err, body) {
+        if(err) {
+            self.log("%s [%s] - getCurrentTemperature(): error=%s", self.accessory.displayName, self.sensor.did,err);
+            return;
+        }
         body.meters.forEach(function(data) {
-            if(data.did == did)
+            if(data.did == self.sensor.did)
             {
                 self.currentTemperature = data.readings.temperature_primary;
-                if (self.debug) self.log("%s [%s] - temperature is %s", self.accessory.displayName, self.sensor.did, self.currentTemperature);
+                if (self.debug) self.log("%s [%s] - temperature is %s", self.accessory.displayName, self.sensor.did, self.currentTemperature);
                 self.service.getCharacteristic(global.Characteristic.CurrentTemperature).updateValue(self.currentTemperature)
             }
         });
