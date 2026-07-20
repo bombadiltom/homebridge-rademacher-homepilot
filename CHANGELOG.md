@@ -1,4 +1,7 @@
 # Changelog
+## 1.0.0
+### migrated to typescript
+
 ## 0.14.2
 ### fix temperature sensor again
 
