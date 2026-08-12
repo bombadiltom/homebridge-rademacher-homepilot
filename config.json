@@ -18,7 +18,7 @@
     "add_dimmer": true,
     "add_thermostat": true,
     "add_lock_switch": true,
-    "add_enviroment_sensor": true,
+    "add_environment_sensor": true,
     "add_sun_sensor": true,
     "add_temperature_sensor": true,
     "add_door_window_sensor": true,

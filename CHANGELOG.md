@@ -1,4 +1,7 @@
 # Changelog
+## 1.0.1
+### fixed typo
+
 ## 1.0.0
 ### migrated to typescript
 

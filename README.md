@@ -28,7 +28,7 @@ Configuration sample:
         "add_dimmer": true,
         "add_thermostat": true,
         "add_lock_switch": true,
-        "add_enviroment_sensor": true,
+        "add_environment_sensor": true,
         "add_sun_sensor": true,
         "add_temperature_sensor": true,
         "add_door_window_sensor": true,
@@ -48,7 +48,7 @@ Configuration sample:
 * `add_dimmer`: if "true", all dimmers are added to HomeKit, otherwise dimmers are not added at all
 * `add_thermostat`: if "true", all thermostats are added to HomeKit, otherwise thermostats are not added at all 
 * `add_lock_switch`: if "true", all locks and switches are added to HomeKit, otherwise locks and switches are not added at all 
-* `add_enviroment_sensor`: if "true", all environment sensors are added HomeKit, otherwise environment sensors are not added at all 
+* `add_environment_sensor`: if "true", all environment sensors are added HomeKit, otherwise environment sensors are not added at all 
 * `add_sun_sensor`: if "true", sun sensors are added to HomeKit, otherwise sun sensors are not added at all 
 * `add_temperature_sensor`: if "true", temperature sensors are added to HomeKit, otherwise temperature sensors are not added at all 
 * `add_door_window_sensor`: if "true", door/window sensors are added to HomeKit, otherwise door/window sensors are not added at all 

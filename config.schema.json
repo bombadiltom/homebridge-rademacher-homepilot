@@ -67,12 +67,12 @@
                 "default": true,
                 "description": " if true, locks/switches are added to HomeKit, otherwise locks/switches are not added at all "
             },
-            "add_enviroment_sensor": {
-                "title": "Add enviroment sensor",
+            "add_environment_sensor": {
+                "title": "Add environment sensor",
                 "type": "boolean",
                 "required": true,
                 "default": true,
-                "description": " if true, enviroment sensors are added to HomeKit, otherwise enviroment sensors are not added at all "
+                "description": " if true, environment sensors are added to HomeKit, otherwise environment sensors are not added at all "
             },
             "add_sun_sensor": {
                 "title": "Add sun sensor",
