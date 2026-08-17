@@ -1,4 +1,4 @@
-import type { Logging, PlatformAccessory } from 'homebridge' with { 'resolution-mode': 'import' };
+import type { Logging, PlatformAccessory, Service, WithUUID } from 'homebridge' with { 'resolution-mode': 'import' };
 import { hap } from '../hap';
 import type { RademacherHomePilotSession } from '../RademacherHomePilotSession';
 import type { HomePilotItem } from '../types';
@@ -42,6 +42,16 @@ export class RademacherAccessory {
         this.debug = debug;
         this.session = session;
         this.did = data.did;
+    }
+
+    // A cached accessory restored from homebridge's persisted accessories.json can be
+    // missing a service (e.g. it was cached by an older plugin version, or the HomePilot
+    // gateway reassigned the did to a different device type). Rather than crashing with
+    // "Cannot read properties of undefined (reading 'getCharacteristic')" - which, thrown
+    // from inside the devices-list GET handler, silently aborts processing of every
+    // remaining device in that batch - self-heal by adding the missing service.
+    protected getOrAddService<S extends WithUUID<typeof Service> & (new (displayName?: string, subtype?: string) => Service)>(serviceConstructor: S, name: string): Service {
+        return this.accessory.getService(serviceConstructor) ?? this.accessory.addService(new serviceConstructor(name));
     }
 
     getDevice(callback: DeviceCallback): void {

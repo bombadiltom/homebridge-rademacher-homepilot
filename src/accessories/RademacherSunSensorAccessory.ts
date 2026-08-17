@@ -17,14 +17,14 @@ export class RademacherSunSensorAccessory extends RademacherAccessory {
         this.services = [];
         // Light sensor
         this.currentSunState = this.sensor.readings?.sun_detected ? 100000 : 0.0001;
-        const lightSensorService = this.accessory.getService(hap.Service.LightSensor)!;
+        const lightSensorService = this.getOrAddService(hap.Service.LightSensor, this.accessory.displayName);
         lightSensorService.getCharacteristic(hap.Characteristic.CurrentAmbientLightLevel)
             .setProps({ minValue: 0.0001, maxValue: 100000 })
             .setValue(this.currentSunState)
             .on('get', this.getCurrentSunState.bind(this));
         this.services.push(lightSensorService);
         // Switch (ambient light level characteristic of light sensor cannot yet be used as trigger in HomeKit)
-        const switchService = this.accessory.getService(hap.Service.Switch)!;
+        const switchService = this.getOrAddService(hap.Service.Switch, this.accessory.displayName);
         switchService.getCharacteristic(hap.Characteristic.On)
             .setValue(!!this.sensor.readings?.sun_detected);
         this.services.push(switchService);

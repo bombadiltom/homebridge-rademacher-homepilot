@@ -28,7 +28,7 @@ export class RademacherBlindsAccessory extends RademacherAccessory {
         this.lastPosition = this.inverted ? tools.reversePercentage(position) : position;
         this.currentTargetPosition = this.lastPosition;
         this.obstructionDetected = false;
-        this.service = this.accessory.getService(hap.Service.WindowCovering)!;
+        this.service = this.getOrAddService(hap.Service.WindowCovering, this.accessory.displayName);
         this.service
             .getCharacteristic(hap.Characteristic.CurrentPosition)
             .setValue(this.currentTargetPosition)

@@ -31,7 +31,7 @@ export class RademacherThermostatAccessory extends RademacherAccessory {
             this.currentState = hap.Characteristic.CurrentHeatingCoolingState.HEAT;
         }
 
-        this.service = this.accessory.getService(hap.Service.Thermostat)!;
+        this.service = this.getOrAddService(hap.Service.Thermostat, this.accessory.displayName);
 
         this.service.getCharacteristic(hap.Characteristic.CurrentHeatingCoolingState)
             .setValue(this.currentState)

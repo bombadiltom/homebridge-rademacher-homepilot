@@ -20,7 +20,7 @@ export class RademacherSwitchAccessory extends RademacherAccessory {
         if (this.debug) {
             this.log('%s [%s] - RademacherSwitchAccessory(): initial state=%s', this.accessory.displayName, this.sw.did, this.currentState);
         }
-        this.service = this.accessory.getService(hap.Service.Switch)!;
+        this.service = this.getOrAddService(hap.Service.Switch, this.accessory.displayName);
         this.service
             .getCharacteristic(hap.Characteristic.On)
             .setValue(this.currentState)

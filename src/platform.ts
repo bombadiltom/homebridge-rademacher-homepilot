@@ -123,97 +123,105 @@ export class RademacherHomePilot implements DynamicPlatformPlugin {
         }
         if (body.devices) {
             body.devices.filter(data => this.didFilter(config, data)).forEach((data) => {
-                const uuid = hap.uuid.generate('did' + data.did);
-                const accessory = this.accessories[uuid];
-
-                // blinds
-                if (BLINDS_DEVICES.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_blinds')) {
-                        if (accessory === undefined) {
-                            this.addBlindsAccessory(data);
-                        } else {
-                            this.log('blinds are online: %s [%s]', this.displayName(accessory), data.did);
-                            this.accessories[uuid] = new RademacherBlindsAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
-                        }
-                    } else {
-                        this.log('blinds found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // dimmer
-                else if (DIMMER_DEVICES.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_dimmer')) {
-                        if (accessory === undefined) {
-                            this.addDimmerAccessory(data);
-                        } else {
-                            this.log('dimmer is online: %s [%s]', this.displayName(accessory), data.did);
-                            this.accessories[uuid] = new RademacherDimmerAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
-                        }
-                    } else {
-                        this.log('dimmer found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // thermostat
-                else if (THERMOSTAT_DEVICES.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_thermostat')) {
-                        if (accessory === undefined) {
-                            this.addThermostatAccessory(data);
-                        } else {
-                            this.log('thermostat is online: %s [%s]', this.displayName(accessory), data.did);
-                            this.accessories[uuid] = new RademacherThermostatAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
-                        }
-                    } else {
-                        this.log('thermostat found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // lock/switch
-                else if (LOCK_SWITCH_DEVICES.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_lock_switch')) {
-                        // icon = "Schließkontakt" ? => lock
-                        if (data.iconSet?.k.includes('iconset27')) {
-                            if (accessory === undefined) {
-                                this.addLockAccessory(data);
-                            } else {
-                                this.log('lock is online: %s [%s]', this.displayName(accessory), data.did);
-                                this.accessories[uuid] = new RademacherLockAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
-                            }
-                        } else {
-                            if (accessory === undefined) {
-                                this.addSwitchAccessory(data);
-                            } else {
-                                this.log('switch is online: %s [%s]', this.displayName(accessory), data.did);
-                                this.accessories[uuid] = new RademacherSwitchAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
-                            }
-                        }
-                    } else {
-                        this.log('lock/switch found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // environment sensor
-                else if (ENVIRONMENT_SENSOR_DEVICES.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_environment_sensor')) {
-                        this.addEnvironmentSensorAccessory(accessory, data);
-                    } else {
-                        this.log('environment sensor found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // sun sensor
-                else if (SUN_SENSOR_DEVICES.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_sun_sensor')) {
-                        this.addSunSensorAccessory(accessory, data);
-                    } else {
-                        this.log('sun sensor found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // unknown
-                else {
-                    this.log('Unknown product: %s', data.deviceNumber);
-                    if (this.debug) {
-                        this.log(String(data));
-                    }
+                try {
+                    this.handleActuator(config, data);
+                } catch (err) {
+                    this.log('Error processing device %s [%s]: %s', data.name, data.did, err);
                 }
             });
         } else {
             this.log('No devices found in %s', body);
+        }
+    }
+
+    private handleActuator(config: PlatformConfig, data: HomePilotItem): void {
+        const uuid = hap.uuid.generate('did' + data.did);
+        const accessory = this.accessories[uuid];
+
+        // blinds
+        if (BLINDS_DEVICES.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_blinds')) {
+                if (accessory === undefined) {
+                    this.addBlindsAccessory(data);
+                } else {
+                    this.log('blinds are online: %s [%s]', this.displayName(accessory), data.did);
+                    this.accessories[uuid] = new RademacherBlindsAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
+                }
+            } else {
+                this.log('blinds found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // dimmer
+        else if (DIMMER_DEVICES.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_dimmer')) {
+                if (accessory === undefined) {
+                    this.addDimmerAccessory(data);
+                } else {
+                    this.log('dimmer is online: %s [%s]', this.displayName(accessory), data.did);
+                    this.accessories[uuid] = new RademacherDimmerAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
+                }
+            } else {
+                this.log('dimmer found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // thermostat
+        else if (THERMOSTAT_DEVICES.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_thermostat')) {
+                if (accessory === undefined) {
+                    this.addThermostatAccessory(data);
+                } else {
+                    this.log('thermostat is online: %s [%s]', this.displayName(accessory), data.did);
+                    this.accessories[uuid] = new RademacherThermostatAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
+                }
+            } else {
+                this.log('thermostat found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // lock/switch
+        else if (LOCK_SWITCH_DEVICES.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_lock_switch')) {
+                // icon = "Schließkontakt" ? => lock
+                if (data.iconSet?.k.includes('iconset27')) {
+                    if (accessory === undefined) {
+                        this.addLockAccessory(data);
+                    } else {
+                        this.log('lock is online: %s [%s]', this.displayName(accessory), data.did);
+                        this.accessories[uuid] = new RademacherLockAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
+                    }
+                } else {
+                    if (accessory === undefined) {
+                        this.addSwitchAccessory(data);
+                    } else {
+                        this.log('switch is online: %s [%s]', this.displayName(accessory), data.did);
+                        this.accessories[uuid] = new RademacherSwitchAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
+                    }
+                }
+            } else {
+                this.log('lock/switch found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // environment sensor
+        else if (ENVIRONMENT_SENSOR_DEVICES.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_environment_sensor')) {
+                this.addEnvironmentSensorAccessory(accessory, data);
+            } else {
+                this.log('environment sensor found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // sun sensor
+        else if (SUN_SENSOR_DEVICES.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_sun_sensor')) {
+                this.addSunSensorAccessory(accessory, data);
+            } else {
+                this.log('sun sensor found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // unknown
+        else {
+            this.log('Unknown product: %s', data.deviceNumber);
+            if (this.debug) {
+                this.log(String(data));
+            }
         }
     }
 
@@ -224,72 +232,80 @@ export class RademacherHomePilot implements DynamicPlatformPlugin {
         }
         if (body.meters) {
             body.meters.filter(data => this.didFilter(config, data)).forEach((data) => {
-                const uuid = hap.uuid.generate('did' + data.did);
-                const accessory = this.accessories[uuid];
-
-                // smoke alarm
-                if (SMOKE_ALARM_DEVICES.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_smoke_alarm')) {
-                        if (accessory === undefined) {
-                            this.addSmokeAlarmAccessory(data);
-                        } else {
-                            this.log('smoke alarm is online: %s [%s]', this.displayName(accessory), data.did);
-                            this.accessories[uuid] = new RademacherSmokeAlarmAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
-                        }
-                    } else {
-                        this.log('smoke alarm found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // environment sensor
-                else if (ENVIRONMENT_SENSOR_METERS.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_environment_sensor')) {
-                        this.addEnvironmentSensorAccessory(accessory, data);
-                    } else {
-                        this.log('environment sensor found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // sun sensor
-                else if (SUN_SENSOR_DEVICES.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_sun_sensor')) {
-                        this.addSunSensorAccessory(accessory, data);
-                    } else {
-                        this.log('sun sensor found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // temperature sensor
-                else if (TEMPERATURE_SENSOR_DEVICES.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_temperature_sensor')) {
-                        if (accessory === undefined) {
-                            this.addTemperatureSensorAccessory(data);
-                        } else {
-                            this.log('temperature sensor is online: %s [%s]', data.name, data.did);
-                            this.accessories[uuid] = new RademacherTemperatureSensorAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
-                        }
-                    } else {
-                        this.log('temperature sensor found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // door/window sensor
-                else if (DOOR_SENSOR_DEVICES.includes(data.deviceNumber!)) {
-                    if (this.flag(config, 'add_door_window_sensor')) {
-                        if (accessory === undefined) {
-                            this.addDoorSensorAccessory(data);
-                        } else {
-                            this.log('door sensor is online: %s [%s]', this.displayName(accessory), data.did);
-                            this.accessories[uuid] = new RademacherDoorSensorAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
-                        }
-                    } else {
-                        this.log('door/window sensor found but not added: %s [%s]', data.name, data.did);
-                    }
-                }
-                // unknown
-                else {
-                    this.log('Unknown product: %s %s %s', data.deviceNumber, data.did, data.name);
-                    this.log(String(data));
+                try {
+                    this.handleSensor(config, data);
+                } catch (err) {
+                    this.log('Error processing device %s [%s]: %s', data.name, data.did, err);
                 }
             });
         } else {
             this.log('No meters found in %s', body);
+        }
+    }
+
+    private handleSensor(config: PlatformConfig, data: HomePilotItem): void {
+        const uuid = hap.uuid.generate('did' + data.did);
+        const accessory = this.accessories[uuid];
+
+        // smoke alarm
+        if (SMOKE_ALARM_DEVICES.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_smoke_alarm')) {
+                if (accessory === undefined) {
+                    this.addSmokeAlarmAccessory(data);
+                } else {
+                    this.log('smoke alarm is online: %s [%s]', this.displayName(accessory), data.did);
+                    this.accessories[uuid] = new RademacherSmokeAlarmAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
+                }
+            } else {
+                this.log('smoke alarm found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // environment sensor
+        else if (ENVIRONMENT_SENSOR_METERS.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_environment_sensor')) {
+                this.addEnvironmentSensorAccessory(accessory, data);
+            } else {
+                this.log('environment sensor found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // sun sensor
+        else if (SUN_SENSOR_DEVICES.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_sun_sensor')) {
+                this.addSunSensorAccessory(accessory, data);
+            } else {
+                this.log('sun sensor found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // temperature sensor
+        else if (TEMPERATURE_SENSOR_DEVICES.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_temperature_sensor')) {
+                if (accessory === undefined) {
+                    this.addTemperatureSensorAccessory(data);
+                } else {
+                    this.log('temperature sensor is online: %s [%s]', data.name, data.did);
+                    this.accessories[uuid] = new RademacherTemperatureSensorAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
+                }
+            } else {
+                this.log('temperature sensor found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // door/window sensor
+        else if (DOOR_SENSOR_DEVICES.includes(data.deviceNumber!)) {
+            if (this.flag(config, 'add_door_window_sensor')) {
+                if (accessory === undefined) {
+                    this.addDoorSensorAccessory(data);
+                } else {
+                    this.log('door sensor is online: %s [%s]', this.displayName(accessory), data.did);
+                    this.accessories[uuid] = new RademacherDoorSensorAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
+                }
+            } else {
+                this.log('door/window sensor found but not added: %s [%s]', data.name, data.did);
+            }
+        }
+        // unknown
+        else {
+            this.log('Unknown product: %s %s %s', data.deviceNumber, data.did, data.name);
+            this.log(String(data));
         }
     }
 
@@ -300,18 +316,22 @@ export class RademacherHomePilot implements DynamicPlatformPlugin {
         }
         if (body.scenes) {
             body.scenes.filter(data => this.didFilter(config, data)).forEach((data) => {
-                if (data.isExecutable === 1) {
-                    const uuid = hap.uuid.generate('sid' + data.sid);
-                    const accessory = this.accessories[uuid];
+                try {
+                    if (data.isExecutable === 1) {
+                        const uuid = hap.uuid.generate('sid' + data.sid);
+                        const accessory = this.accessories[uuid];
 
-                    if (accessory === undefined) {
-                        this.addSceneAccessory(data);
+                        if (accessory === undefined) {
+                            this.addSceneAccessory(data);
+                        } else {
+                            this.log('scene is online: %s [%s]', this.displayName(accessory), data.sid);
+                            this.accessories[uuid] = new RademacherSceneAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
+                        }
                     } else {
-                        this.log('scene is online: %s [%s]', this.displayName(accessory), data.sid);
-                        this.accessories[uuid] = new RademacherSceneAccessory(this.log, this.debug, this.platformAccessoryOf(accessory), data, this.session);
+                        this.log('Filtered scene: %s %s', data.sid, data.name);
                     }
-                } else {
-                    this.log('Filtered scene: %s %s', data.sid, data.name);
+                } catch (err) {
+                    this.log('Error processing scene %s [%s]: %s', data.name, data.sid, err);
                 }
             });
         } else {

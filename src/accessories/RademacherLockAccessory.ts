@@ -14,7 +14,7 @@ export class RademacherLockAccessory extends RademacherAccessory {
     constructor(log: Logging, debug: boolean, accessory: PlatformAccessory, lock: HomePilotItem, session: RademacherHomePilotSession) {
         super(log, debug, accessory, lock, session);
         this.lock = lock;
-        this.lockservice = accessory.getService(hap.Service.LockMechanism)!;
+        this.lockservice = this.getOrAddService(hap.Service.LockMechanism, accessory.displayName);
 
         this.currentState = lock.statusesMap?.Position === 0
             ? hap.Characteristic.LockCurrentState.SECURED

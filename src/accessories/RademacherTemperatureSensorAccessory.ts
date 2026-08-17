@@ -17,7 +17,7 @@ export class RademacherTemperatureSensorAccessory extends RademacherAccessory {
         this.sensor = sensor;
         this.currentTemperature = sensor.readings?.temperature_primary ?? 0;
 
-        this.service = this.accessory.getService(hap.Service.TemperatureSensor)!;
+        this.service = this.getOrAddService(hap.Service.TemperatureSensor, this.accessory.displayName);
         this.service.getCharacteristic(hap.Characteristic.CurrentTemperature)
             .setProps({ minValue: -30.0, maxValue: 80.0 })
             .setValue(this.currentTemperature)
