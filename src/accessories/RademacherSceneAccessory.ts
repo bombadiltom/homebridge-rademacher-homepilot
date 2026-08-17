@@ -17,7 +17,7 @@ export class RademacherSceneAccessory extends RademacherAccessory {
 
         this.debug = true;
 
-        this.service = this.accessory.getService(hap.Service.Switch)!;
+        this.service = this.getOrAddService(hap.Service.Switch, this.accessory.displayName);
 
         this.service
             .getCharacteristic(hap.Characteristic.On).setValue(false)

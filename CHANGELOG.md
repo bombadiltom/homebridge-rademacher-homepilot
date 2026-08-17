@@ -1,4 +1,7 @@
 # Changelog
+## 1.0.2
+### fix crash when a cached accessory is missing a service
+
 ## 1.0.1
 ### fixed typo
 

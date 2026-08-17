@@ -18,14 +18,14 @@ export class RademacherSmokeAlarmAccessory extends RademacherAccessory {
         this.services = [];
         // smoke
         this.smokeDetected = !!this.sensor.readings?.smoke_detected;
-        const smokesensorService = this.accessory.getService(hap.Service.SmokeSensor)!;
+        const smokesensorService = this.getOrAddService(hap.Service.SmokeSensor, this.accessory.displayName);
         smokesensorService.getCharacteristic(hap.Characteristic.SmokeDetected)
             .setValue(this.smokeDetected)
             .on('get', this.getSmokeDetected.bind(this));
         this.services.push(smokesensorService);
         // battery
         this.currentBatteryLevel = this.sensor.batteryStatus ?? 0;
-        const batteryService = this.accessory.getService(hap.Service.Battery)!;
+        const batteryService = this.getOrAddService(hap.Service.Battery, this.accessory.displayName);
         batteryService.getCharacteristic(hap.Characteristic.BatteryLevel)
             .setValue(this.currentBatteryLevel)
             .on('get', this.getCurrentBatteryLevel.bind(this));

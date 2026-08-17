@@ -18,14 +18,14 @@ export class RademacherDoorSensorAccessory extends RademacherAccessory {
         this.services = [];
         // contact sensor
         this.currentState = this.sensor.readings?.contact_state !== 'closed';
-        const contactsensorService = this.accessory.getService(hap.Service.ContactSensor)!;
+        const contactsensorService = this.getOrAddService(hap.Service.ContactSensor, this.accessory.displayName);
         contactsensorService.getCharacteristic(hap.Characteristic.ContactSensorState)
             .setValue(this.currentState)
             .on('get', this.getCurrentDoorState.bind(this));
         this.services.push(contactsensorService);
         // battery
         this.currentBatteryLevel = this.sensor.batteryStatus ?? 0;
-        const batteryService = this.accessory.getService(hap.Service.Battery)!;
+        const batteryService = this.getOrAddService(hap.Service.Battery, this.accessory.displayName);
         batteryService.getCharacteristic(hap.Characteristic.BatteryLevel)
             .setValue(this.currentBatteryLevel)
             .on('get', this.getCurrentBatteryLevel.bind(this));

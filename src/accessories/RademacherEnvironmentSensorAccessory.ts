@@ -19,7 +19,7 @@ export class RademacherEnvironmentSensorAccessory extends RademacherAccessory {
         this.services = [];
         // temperature sensor
         this.currentTemperature = sensor.readings?.temperature_primary ?? 0;
-        const temperatureService = this.accessory.getService(hap.Service.TemperatureSensor)!;
+        const temperatureService = this.getOrAddService(hap.Service.TemperatureSensor, this.accessory.displayName);
         temperatureService.getCharacteristic(hap.Characteristic.CurrentTemperature)
             .setProps({ minValue: -30.0, maxValue: 80.0 })
             .setValue(this.currentTemperature)
@@ -27,7 +27,7 @@ export class RademacherEnvironmentSensorAccessory extends RademacherAccessory {
         this.services.push(temperatureService);
         // light sensor
         this.currentAmbientLightLevel = sensor.readings?.sun_brightness ?? 0;
-        const lightService = this.accessory.getService(hap.Service.LightSensor)!;
+        const lightService = this.getOrAddService(hap.Service.LightSensor, this.accessory.displayName);
         lightService.getCharacteristic(hap.Characteristic.CurrentAmbientLightLevel)
             .setProps({ minValue: 0, maxValue: 150000 })
             .setValue(this.currentAmbientLightLevel)
@@ -35,7 +35,7 @@ export class RademacherEnvironmentSensorAccessory extends RademacherAccessory {
         this.services.push(lightService);
         // Rain sensor
         this.currentRainState = !!this.sensor.readings?.rain_detected;
-        const rainsensorService = this.accessory.getService(hap.Service.ContactSensor)!;
+        const rainsensorService = this.getOrAddService(hap.Service.ContactSensor, this.accessory.displayName);
         rainsensorService.getCharacteristic(hap.Characteristic.ContactSensorState)
             .setValue(this.currentRainState)
             .on('get', this.getCurrentRainState.bind(this));

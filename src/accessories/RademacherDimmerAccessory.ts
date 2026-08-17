@@ -30,7 +30,7 @@ export class RademacherDimmerAccessory extends RademacherAccessory {
         this.currentBrightness = this.lastBrightness;
         this.currentStatus = position > 0;
         this.lastStatus = this.currentStatus;
-        this.service = this.accessory.getService(hap.Service.Lightbulb)!;
+        this.service = this.getOrAddService(hap.Service.Lightbulb, this.accessory.displayName);
         this.service.getCharacteristic(hap.Characteristic.On)
             .on('get', this.getStatus.bind(this))
             .on('set', this.setStatus.bind(this));
