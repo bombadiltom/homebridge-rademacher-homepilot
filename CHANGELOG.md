@@ -1,4 +1,7 @@
 # Changelog
+## 1.0.3
+### coalesce redundant HTTP requests to the HomePilot gateway
+
 ## 1.0.2
 ### fix crash when a cached accessory is missing a service
 

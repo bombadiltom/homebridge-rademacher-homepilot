@@ -1,7 +1,7 @@
 import type { CharacteristicValue, Logging, PlatformAccessory, Service } from 'homebridge' with { 'resolution-mode': 'import' };
 import { hap } from '../hap';
 import { RademacherAccessory } from './RademacherAccessory';
-import type { RademacherHomePilotSession } from '../RademacherHomePilotSession';
+import { SENSOR_LIST_CACHE_TTL_MS, type RademacherHomePilotSession } from '../RademacherHomePilotSession';
 import type { DevicesResponse, HomePilotItem } from '../types';
 
 type GetCallback = (error: Error | null, value?: CharacteristicValue | null) => void;
@@ -36,7 +36,7 @@ export class RademacherSunSensorAccessory extends RademacherAccessory {
             this.log('%s [%s] - getCurrentSunState()', this.accessory.displayName, this.sensor.did);
         }
         callback(null, this.currentSunState);
-        this.session.get('/v4/devices?devtype=Sensor', 30000, (err, body: DevicesResponse) => {
+        this.session.getCached('/v4/devices?devtype=Sensor', 30000, SENSOR_LIST_CACHE_TTL_MS, (err, body: DevicesResponse) => {
             if (err) {
                 this.log('%s [%s] - getCurrentSunState(): error=%s', this.accessory.displayName, this.sensor.did, err);
                 return;

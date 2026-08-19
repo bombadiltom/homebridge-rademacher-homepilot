@@ -1,6 +1,6 @@
 {
   "name": "homebridge-rademacher-homepilot",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "rademacher homepilot plugin for homebridge: https://github.com/bombadiltom/homebridge-rademacher-homepilot",
   "license": "MIT",
   "keywords": [
