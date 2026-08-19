@@ -5,6 +5,13 @@ import type { HomePilotItem } from '../types';
 
 export type DeviceCallback = (error: Error | null, device?: HomePilotItem | null) => void;
 
+// getDevice() is called once per characteristic read, and HomeKit/our own poll
+// interval can trigger several of those in quick succession for the same
+// accessory (e.g. reading CurrentPosition and TargetPosition together). Reusing
+// a response this fresh avoids redundant round trips to the HomePilot gateway
+// without making state look stale to HomeKit.
+const DEVICE_CACHE_TTL_MS = 4000;
+
 export class RademacherAccessory {
     readonly accessory: PlatformAccessory;
     readonly log: Logging;
@@ -13,6 +20,7 @@ export class RademacherAccessory {
     readonly did?: number;
     protected lastUpdate = 0;
     protected device: HomePilotItem | null = null;
+    private pendingCallbacks: DeviceCallback[] | null = null;
 
     constructor(log: Logging, debug: boolean, accessory: PlatformAccessory, data: HomePilotItem, session: RademacherHomePilotSession) {
         const info = accessory.getService(hap.Service.AccessoryInformation)!;
@@ -55,23 +63,37 @@ export class RademacherAccessory {
     }
 
     getDevice(callback: DeviceCallback): void {
-        if (this.lastUpdate < Date.now()) {
-            this.session.get('/v4/devices/' + this.did, 30000, (e, body) => {
-                if (e) {
-                    return callback(new Error('Request failed: ' + e), null);
-                }
-                if (body && (Object.prototype.hasOwnProperty.call(body, 'device') || Object.prototype.hasOwnProperty.call(body, 'meter'))) {
-                    const device = Object.prototype.hasOwnProperty.call(body, 'device') ? body.device : body.meter;
-                    this.device = device.data;
-                    this.lastUpdate = Date.now();
-                    callback(null, device);
-                } else {
-                    this.log('no device, no meter');
-                    callback(null, this.device);
-                }
-            });
-        } else {
+        if (Date.now() - this.lastUpdate <= DEVICE_CACHE_TTL_MS) {
             callback(null, this.device);
+            return;
         }
+        // update() reads several characteristics back-to-back (e.g. current + target
+        // temperature + heating state), all before any response comes back. The TTL
+        // check above only catches calls made *after* a previous fetch resolved, so
+        // concurrent callers here would otherwise each fire their own request; queue
+        // them onto the one already in flight instead.
+        if (this.pendingCallbacks) {
+            this.pendingCallbacks.push(callback);
+            return;
+        }
+        this.pendingCallbacks = [callback];
+        this.session.get('/v4/devices/' + this.did, 30000, (e, body) => {
+            const callbacks = this.pendingCallbacks ?? [];
+            this.pendingCallbacks = null;
+            if (e) {
+                const error = new Error('Request failed: ' + e);
+                callbacks.forEach((cb) => cb(error, null));
+                return;
+            }
+            if (body && (Object.prototype.hasOwnProperty.call(body, 'device') || Object.prototype.hasOwnProperty.call(body, 'meter'))) {
+                const device = Object.prototype.hasOwnProperty.call(body, 'device') ? body.device : body.meter;
+                this.device = device.data;
+                this.lastUpdate = Date.now();
+                callbacks.forEach((cb) => cb(null, device));
+            } else {
+                this.log('no device, no meter');
+                callbacks.forEach((cb) => cb(null, this.device));
+            }
+        });
     }
 }
