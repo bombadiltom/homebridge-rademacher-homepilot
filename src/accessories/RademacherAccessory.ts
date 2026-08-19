@@ -86,8 +86,14 @@ export class RademacherAccessory {
                 return;
             }
             if (body && (Object.prototype.hasOwnProperty.call(body, 'device') || Object.prototype.hasOwnProperty.call(body, 'meter'))) {
-                const device = Object.prototype.hasOwnProperty.call(body, 'device') ? body.device : body.meter;
-                this.device = device.data;
+                // The API nests the actually useful fields (statusesMap, readings, ...)
+                // one level under "data". Every caller reads e.g. device.statusesMap
+                // directly, so make sure the flattened payload - the same value stored
+                // in this.device for the cache-hit path below - is what callers get here
+                // too, instead of the outer wrapper.
+                const wrapper = Object.prototype.hasOwnProperty.call(body, 'device') ? body.device : body.meter;
+                const device = wrapper.data ?? wrapper;
+                this.device = device;
                 this.lastUpdate = Date.now();
                 callbacks.forEach((cb) => cb(null, device));
             } else {
